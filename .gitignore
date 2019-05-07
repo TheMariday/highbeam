@@ -109,3 +109,5 @@ photogrammetry/*.jpg
 *.blend1
 
 MAPPING.psd
+
+.idea
