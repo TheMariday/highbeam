@@ -29,6 +29,8 @@ class LedHarness:
         self.leds = get_led_info()
         self.client = opc.Client('localhost:7890')
         self.uv_maps = ["side", "front"]  # order = bottom to top of layers
+        self.max_amp = 5
+        self.max_rgb = ((self.max_amp*1000)/60.0)*255*3  # max amp 10 amps = 60ma each
 
     def image_2_colour_array(self, image_filepath):
         led_colours = np.zeros((512, 3))
@@ -53,17 +55,18 @@ class LedHarness:
     def colour_array_info(self, colour_array):
         c = np.array(colour_array)
         print("sum:", np.sum(c))
-        print("percentage sum:", np.sum(c)/(len(self.leds)*255.0*3))
+        print("percentage sum:", np.sum(c)/self.max_rgb)
         print("max:", np.max(c))
         print("full brightness equiv:", np.sum(c)/(3*255))
 
     def render(self, led_array, instant=False):
 
         led_array = np.array(led_array)
-        print("load = %s" % np.sum(led_array))
-        if np.sum(led_array) > len(self.leds)*255:
-            print("overload")
-            quit()
+
+        if np.sum(led_array) > self.max_rgb:
+            ratio = float(self.max_rgb) / np.sum(led_array)
+            print("overloaded, capping to %f" % ratio)
+            led_array *= ratio
 
         self.client.put_pixels(led_array)
         if instant:
