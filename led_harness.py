@@ -29,8 +29,19 @@ class LedHarness:
         self.leds = get_led_info()
         self.client = opc.Client('localhost:7890')
         self.uv_maps = ["side", "front"]  # order = bottom to top of layers
-        self.max_amp = 5
-        self.max_rgb = ((self.max_amp*1000)/60.0)*255*3  # max amp 10 amps = 60ma each
+        self._max_amp = 5
+        self._brightness = .5
+
+    def set_brightness(self, value):
+        if 0 <= value <= 1:
+            self._brightness = value
+
+    def set_max_amp(self, amp):
+        if 0 <= amp <= 10:
+            self._max_amp = amp
+
+    def get_max_rgb(self):
+        return ((self._max_amp * 1000) / 60.0) * 255 * 3  # max amp 10 amps = 60ma each
 
     def image_2_colour_array(self, image_filepath):
         led_colours = np.zeros((512, 3))
@@ -55,7 +66,7 @@ class LedHarness:
     def colour_array_info(self, colour_array):
         c = np.array(colour_array)
         print("sum:", np.sum(c))
-        print("percentage sum:", np.sum(c)/self.max_rgb)
+        print("percentage sum:", np.sum(c)/self.get_max_rgb())
         print("max:", np.max(c))
         print("full brightness equiv:", np.sum(c)/(3*255))
 
@@ -63,9 +74,15 @@ class LedHarness:
 
         led_array = np.array(led_array)
 
-        if np.sum(led_array) > self.max_rgb:
-            ratio = float(self.max_rgb) / np.sum(led_array)
-            print("overloaded, capping to %f" % ratio)
+        if np.max(led_array) > 255 or np.min(led_array) < 0:
+            print("Warning, some pixels values are outside of expected parameters")
+            return
+
+        led_array *= self._brightness
+
+        if np.sum(led_array) > self.get_max_rgb():
+            ratio = 1 - float(self.get_max_rgb()) / np.sum(led_array)
+            print("Suit overloaded, capping by %.1f%%" % (ratio*100))
             led_array *= ratio
 
         self.client.put_pixels(led_array)

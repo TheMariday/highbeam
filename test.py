@@ -43,15 +43,15 @@ import os
 if __name__ == "__main__":
 
     from led_harness import LedHarness
-    import time
+    import numpy as np
 
     h = LedHarness()
 
     evil_face_colour_array = h.image_2_colour_array("faces/evil_2.png")
 
     h.colour_array_info(evil_face_colour_array)
-
-    # h.render(evil_face_colour_array, instant=True)
+    # max_array = np.ones((512, 3))*255/3
+    h.render(evil_face_colour_array, instant=True)
 
     # time.sleep(2)
 
