@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 
 # Light each LED in sequence, and repeat.
+import sys
 
+sys.path.append("D:\\Users\\Sam\\GIT\\HighBeam\\fadecandy\\examples\\python")
 import opc, time, json
 import numpy as np
 from pprint import pprint
 numLEDs = 512
 client = opc.Client('localhost:7890')
 
-led_id_lookup = json.load(open('id_store.json'))
-led_info = json.load(open("C:\\Users\\Sam\\Desktop\\highbeam_test\\led_placement.json"))
+led_id_lookup = json.load(open('D:\\Users\\Sam\\GIT\\HighBeam\\mapping\\led_hardware_index.json'))
+led_info = json.load(open("D:\\Users\\Sam\\GIT\\HighBeam\\mapping\\led_info.json"))
 
 led_id_lookup = ["LED.%s" % l for l in led_id_lookup]
 
@@ -23,7 +25,7 @@ for led_name in led_info:
 # quit()
 
 i = -30
-band = 10
+band = 5
 
 try:
 	while True:
