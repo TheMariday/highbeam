@@ -39,20 +39,41 @@ import json
 import os
 
 
-
 if __name__ == "__main__":
 
     from led_harness import LedHarness
     import numpy as np
+    import time
 
     h = LedHarness()
 
-    evil_face_colour_array = h.image_2_colour_array("faces/evil_2.png")
+    i = -30
+    band = 15
 
-    h.colour_array_info(evil_face_colour_array)
-    # max_array = np.ones((512, 3))*255/3
-    h.render(evil_face_colour_array, instant=True)
+    try:
+        while True:
+            pixels = np.zeros((512, 3))
 
-    # time.sleep(2)
+            for led_name in h.leds:
+                led = h.leds[led_name]
+                address = led["hardware_id"]
 
-    # h.quit()
+                x, y, z = led["position"]
+                x_dist = abs(i - x)
+                y_dist = abs(i - y)
+                z_dist = abs(i - z)
+                xb = max(-x_dist / band + 1, 0)
+                yb = max(-y_dist / band + 1, 0)
+                zb = max(-z_dist / band + 1, 0)
+                pixels[address] = [128 * xb, 128 * yb, 128 * zb]
+
+            h.render(pixels)
+
+            time.sleep(1 / 60.0)
+
+            if i > 25:
+                i = -30
+
+            i += 2
+    finally:
+        h.quit()

@@ -19,6 +19,8 @@ def get_led_info():
         led_placement[led_id]["hardware_id"] = led_hw_id.index(led_id)
         led_placement[led_id]["density"] = density
         # led_placement[led_id]["colour"] = [0, 0, 0]
+        if "position" not in led_placement[led_id]:
+            led_placement[led_id]["position"] = led_placement[led_id]["position_actual"]
 
     return led_placement
 
@@ -30,7 +32,7 @@ class LedHarness:
         self.client = opc.Client('localhost:7890')
         self.uv_maps = ["side", "front"]  # order = bottom to top of layers
         self._max_amp = 5
-        self._brightness = .5
+        self._brightness = 200/255.0
 
     def set_brightness(self, value):
         if 0 <= value <= 1:
@@ -41,7 +43,8 @@ class LedHarness:
             self._max_amp = amp
 
     def get_max_rgb(self):
-        return ((self._max_amp * 1000) / 60.0) * 255 * 3  # max amp 10 amps = 60ma each
+        c = (self._max_amp * 1000) / 60.0
+        return c * 255 * 3  # max amp 10 amps = 60ma each
 
     def image_2_colour_array(self, image_filepath):
         led_colours = np.zeros((512, 3))
@@ -81,8 +84,8 @@ class LedHarness:
         led_array *= self._brightness
 
         if np.sum(led_array) > self.get_max_rgb():
-            ratio = 1 - float(self.get_max_rgb()) / np.sum(led_array)
-            print("Suit overloaded, capping by %.1f%%" % (ratio*100))
+            ratio = float(self.get_max_rgb()) / np.sum(led_array)
+            print("Suit overloaded, capping by %.1f%%" % ((1-ratio)*100))
             led_array *= ratio
 
         self.client.put_pixels(led_array)
