@@ -1,30 +1,54 @@
+"""
+Node list:
+    effect_controller.py
+        eyes & rgb leds
+        controls and stores effects to be launched
+        can be controlled directly
+        listens to:
+            start_effect [effect_name]
+            stop_effect [effect_name]
+            stop_all
+            pupil_location [rx, ry, lx, ly, 0..1]
+            overlay_colour [r, g, b]
+            set_frame_rate [0..120]
+            brightness [value]
 
-# a node test.py
+    eye_controller.py:
+        controls pupil position
+        listens to:
+            pose [quat]
+        broadcasts:
+            pupil_location [rx, ry, lx, ly, 0..1]
+            look_target [x, y, z]
 
-import CostumePy
+    localisation.py
+        provides IMU readings for moving the 3d points
+        also provides temp info
+        listens to:
+            recenter_pose
+        broadcasts:
+            pose [quat]
+            temp [degrees]
+            acceleration [x, y, z in dps]
+            gyro [x, y, z in mps]
 
-CostumePy.listen("something", print)
+    button_box.py
+        provides button and knob inputs
+        broadcasts:
+            button [id, action]
+            knob [value, direction]
+            start_effect [effect_name, args]3
 
-while CostumePy.is_running():
-    CostumePy.broadcast("control", True)
+effect ideas:
+    flash mask
+    wipe mask
+    rainbow
+    eye flash
+    eye spin
+    frowny face
 
-
-# A system launch
-from multiprocessing import Process
-
-from CostumePy import Launcher
-
-l = Launcher()
-
-l.add("test.py")
-l.add("test2.py")
-
-l.launch()
-# which in turn
-# for each node:
-# launches each node in turn with os.system sys.executable filename.py &
-# or sts = Popen([python, filename, arg1, arg2], shell=true)
-# use sts.poll(), sys.terminate() or sys.kill()
-# waits for communication setup
-# sets up node
-# then when it quits it sends shutdown commands to those processes
+effect_struct
+    frame_rate = int
+    type = full, fadeout
+    mask = True / False
+"""
