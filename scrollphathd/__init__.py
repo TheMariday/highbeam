@@ -6,16 +6,16 @@ import numpy
 
 __version__ = '1.2.1'
 
-DISPLAY_WIDTH = width = 18
-DISPLAY_HEIGHT = height = 9
+DISPLAY_WIDTH = width = 9
+DISPLAY_HEIGHT = height = 16
 
 _clear_on_exit = True
 _current_frame = 0
 _font = font5x7
-_flipx = False
+_flipx = True
 _flipy = False
 _scroll = [0, 0]
-_rotate = 0
+_rotate = 1
 _brightness = 1.0
 _gamma_table = [
     0, 0, 0, 0, 0, 0, 0, 0,
@@ -53,7 +53,6 @@ _gamma_table = [
 
 display = None
 buf = None
-
 
 def setup(i2c_dev=None, i2c_address=0x74):
     """Set up Scroll pHAT HD.
@@ -204,6 +203,7 @@ def show(before_display=None):
     if _flipy:
         display_buffer = numpy.fliplr(display_buffer)
 
+#    display_buffer = numpy.rot90(display_buffer, -1)
     if _rotate:
         display_buffer = numpy.rot90(display_buffer, _rotate)
 
@@ -536,8 +536,15 @@ def get_buffer_shape():
 def _pixel_addr(x, y):
     """Translate an x,y coordinate to a pixel index."""
 
-    return x + y * 15
+    #return x + y * 15
+    """Translate an x,y coordinate to a pixel index."""
+#    if x > 8:
+#        x = x - 8
+#        y = 6 - (y + 8)
+#    else:
+#        x = 8 - x
 
+    return x * 16  + y
     # 17 x 7
 
 
