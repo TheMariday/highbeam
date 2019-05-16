@@ -6,8 +6,8 @@ import numpy
 
 __version__ = '1.2.1'
 
-DISPLAY_WIDTH = width = 17
-DISPLAY_HEIGHT = height = 7
+DISPLAY_WIDTH = width = 18
+DISPLAY_HEIGHT = height = 9
 
 _clear_on_exit = True
 _current_frame = 0
@@ -209,7 +209,7 @@ def show(before_display=None):
 
     for x in range(width):
         for y in range(height):
-            idx = _pixel_addr(x, height - (y + 1))
+            idx = _pixel_addr(x, y)
 
             try:
                 value = _gamma_table[int(display_buffer[x][y] * 255 * _brightness)]
@@ -535,13 +535,10 @@ def get_buffer_shape():
 
 def _pixel_addr(x, y):
     """Translate an x,y coordinate to a pixel index."""
-    if x > 8:
-        x = x - 8
-        y = 6 - (y + 8)
-    else:
-        x = 8 - x
 
-    return x * 16 + y
+    return x + y * 15
+
+    # 17 x 7
 
 
 def _exit():
