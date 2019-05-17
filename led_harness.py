@@ -22,6 +22,12 @@ def get_led_info():
         if "position" not in led_placement[led_id]:
             led_placement[led_id]["position"] = led_placement[led_id]["position_actual"]
 
+        led_placement[led_id]["position"][0] *= -1
+        led_placement[led_id]["position"][1] *= -1
+        led_placement[led_id]["position_actual"][0] *= -1
+        led_placement[led_id]["position_actual"][1] *= -1
+
+
     return led_placement
 
 

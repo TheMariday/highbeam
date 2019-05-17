@@ -1,3 +1,4 @@
+from __future__ import division
 
 #
 # led_hardware_index.json
@@ -38,42 +39,76 @@
 import json
 import os
 
+# from led_harness import LedHarness
+# import numpy as np
+# import time
+#
+# h = LedHarness()
+#
+# h.set_brightness(1)
+#
+# i = 0
+# band = 5
+# c = 1
+#
+# try:
+#     while True:
+#         pixels = np.zeros((512, 3))
+#
+#         for led_name in h.leds:
+#             led = h.leds[led_name]
+#             address = led["hardware_id"]
+#
+#             x, y, z = led["position"]
+#             x_dist = abs(i - x)
+#             y_dist = abs(i - y)
+#             z_dist = abs(i - z)
+#             xb = max(-x_dist / band + 1, 0)
+#             yb = max(-y_dist / band + 1, 0)
+#             zb = max(-z_dist / band + 1, 0)
+#             pixels[address] = [128 * xb, 128 * yb, 128 * zb]
+#
+#         h.render(pixels)
+#
+#         time.sleep(1 / 60.0)
+#
+#         if not (abs(i) <= 27.38 / 2):
+#             c = -c
+#
+#         i += .1 * c
+# finally:
+#     h.quit()
 
 if __name__ == "__main__":
-
-    from led_harness import LedHarness
     import numpy as np
-    import time
 
-    h = LedHarness()
+    def buf_display(buf):
+        out_str = ""
+        for x in range(9):
+            for y in range(16):
+                out_str += "###" if buf[x, y] else "---"
+                out_str += "\t|\t" if y == 7 else ""
+            out_str += "\n"
+        print(out_str)
 
-    i = -30
-    band = 15
+    buf = np.zeros((9, 16))
 
-    try:
-        while True:
-            pixels = np.zeros((512, 3))
+    buf_display(buf)
 
-            for led_name in h.leds:
-                led = h.leds[led_name]
-                address = led["hardware_id"]
+    circle_center = np.array([4, 0, 0, 0])
+    stretch = 3/4
+    lec = circle_center[:2] + np.array([9/2, 3.5])
+    rec = circle_center[2:] + np.array([9/2, 11.5])
 
-                x, y, z = led["position"]
-                x_dist = abs(i - x)
-                y_dist = abs(i - y)
-                z_dist = abs(i - z)
-                xb = max(-x_dist / band + 1, 0)
-                yb = max(-y_dist / band + 1, 0)
-                zb = max(-z_dist / band + 1, 0)
-                pixels[address] = [128 * xb, 128 * yb, 128 * zb]
+    cs = 2.3
 
-            h.render(pixels)
+    for x in range(9):
+        for y in range(8):
+            d2l = np.linalg.norm(lec - np.array([((x - 9/2)*stretch) + 9/2, y]))
+            buf[x, y] = int(d2l < cs)
 
-            time.sleep(1 / 60.0)
+        for y in range(8, 16):
+            d2r = np.linalg.norm(rec - np.array([((x - 9/2)*stretch) + 9/2, y]))
+            buf[x, y] = int(d2r < cs)
 
-            if i > 25:
-                i = -30
-
-            i += 2
-    finally:
-        h.quit()
+    buf_display(buf)
