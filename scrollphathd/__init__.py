@@ -212,7 +212,7 @@ def show(before_display=None):
             idx = _pixel_addr(x, y)
 
             try:
-                value = _gamma_table[int(display_buffer[x][y] * 255 * _brightness)]
+                value = _gamma_table[int(display_buffer[x][y] * _brightness)]
             except IndexError:
                 value = 0
 

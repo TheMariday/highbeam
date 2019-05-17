@@ -78,37 +78,46 @@ import os
 #         i += .1 * c
 # finally:
 #     h.quit()
+# import numpy as np
+#
+# def buf_display(buf):
+#     out_str = ""
+#     for x in range(9):
+#         for y in range(16):
+#             out_str += "###" if buf[x, y] else "---"
+#             out_str += "\t|\t" if y == 7 else ""
+#         out_str += "\n"
+#     print(out_str)
+#
+# buf = np.zeros((9, 16))
+#
+# buf_display(buf)
+#
+# circle_center = np.array([4, 0, 0, 0])
+# stretch = 3/4
+# lec = circle_center[:2] + np.array([9/2, 3.5])
+# rec = circle_center[2:] + np.array([9/2, 11.5])
+#
+# cs = 2.3
+#
+# for x in range(9):
+#     for y in range(8):
+#         d2l = np.linalg.norm(lec - np.array([((x - 9/2)*stretch) + 9/2, y]))
+#         buf[x, y] = int(d2l < cs)
+#
+#     for y in range(8, 16):
+#         d2r = np.linalg.norm(rec - np.array([((x - 9/2)*stretch) + 9/2, y]))
+#         buf[x, y] = int(d2r < cs)
+#
+# buf_display(buf)
+
 
 if __name__ == "__main__":
-    import numpy as np
+    f = open("t.py","r")
 
-    def buf_display(buf):
-        out_str = ""
-        for x in range(9):
-            for y in range(16):
-                out_str += "###" if buf[x, y] else "---"
-                out_str += "\t|\t" if y == 7 else ""
-            out_str += "\n"
-        print(out_str)
+    d = f.read().split("\n")
 
-    buf = np.zeros((9, 16))
+    print(len(d))
 
-    buf_display(buf)
-
-    circle_center = np.array([4, 0, 0, 0])
-    stretch = 3/4
-    lec = circle_center[:2] + np.array([9/2, 3.5])
-    rec = circle_center[2:] + np.array([9/2, 11.5])
-
-    cs = 2.3
-
-    for x in range(9):
-        for y in range(8):
-            d2l = np.linalg.norm(lec - np.array([((x - 9/2)*stretch) + 9/2, y]))
-            buf[x, y] = int(d2l < cs)
-
-        for y in range(8, 16):
-            d2r = np.linalg.norm(rec - np.array([((x - 9/2)*stretch) + 9/2, y]))
-            buf[x, y] = int(d2r < cs)
-
-    buf_display(buf)
+    for i in range(9):
+        print(d[i*16:(i+1)*16])
