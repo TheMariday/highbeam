@@ -7,6 +7,7 @@ class base_effect:
         self.current_time = 0
         self.colours = {}
         self.running = True
+        self.name = self.__class__.__name__
 
     def set_colour(self, led_id, colour):
         self.colours[led_id] = colour

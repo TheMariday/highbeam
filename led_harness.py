@@ -76,14 +76,15 @@ class LedHarness:
 
         return led_colours
 
-    def update(self, d):
+    def set_colours(self, d, render=True):
         for led_id in self.leds:
             if led_id in d:
                 self.leds[led_id]["colour"] = d[led_id]
             else:
                 self.leds[led_id]["colour"] = [0, 0, 0]
 
-        # TODO render self
+        if render:
+            self.render()
 
     def render(self, instant=True):
 
