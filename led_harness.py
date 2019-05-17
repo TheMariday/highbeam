@@ -56,11 +56,11 @@ class LedHarness:
         self.HEIGHT = 25.5237
         self.DEPTH = 30.5849
 
-    def image_2_colour_array(self, image_filepath):
-        led_colours = np.zeros((512, 3))
+    def image_to_colours(self, image_filepath):
 
         img = Image.open(image_filepath)
         pixels = img.load()
+        colours = {}
 
         for map_name in self.uv_maps:
             for led_id in self.leds:
@@ -68,13 +68,13 @@ class LedHarness:
                 if map_name in led["maps"]:
                     u, v = led["maps"][map_name]
                     x, y = int(u*img.width), int((1-v)*img.height)
-                    rgba = pixels[x, y]
-                    r = rgba[3]/255.0
-                    led_colours[led["hardware_id"]] = [led_colours[led["hardware_id"]][i]*(1-r) + rgba[i]*r for i in range(3)]
+                    r, g, b, a = pixels[x, y]
+                    if a:  # Support blending in the future.
+                        colours[led_id] = [r, g, b]
                 else:
-                    print("can't find mapping for %s" % led_id)
+                    logging.warning("can't find mapping for %s" % led_id)
 
-        return led_colours
+        return colours
 
     def set_colours(self, d, render=True):
         for led_id in self.leds:

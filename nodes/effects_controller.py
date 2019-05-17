@@ -1,6 +1,8 @@
 import logging
 import CostumePy
+import time
 from led_harness import LedHarness
+
 
 class Controller:
 
@@ -13,7 +15,7 @@ class Controller:
         self.node.listen("launch_effect", self.launch_effect)
         self.node.listen("stop_effect", self.stop_effect)
 
-        self.node.ui.add_text("effects_running")
+        self.node.ui.add_text("effects_running", order=99)
 
         for i, e in enumerate(effects):
             self.node.ui.add_button("%s_launch" % e.name, e.name, "launch_effect", data=e.name, order=i*2)
@@ -34,7 +36,7 @@ class Controller:
     def launch_effect(self, msg):
         effect_name = msg["data"]
         if effect_name in self.effects:
-            effect = self.effects[msg["data"]](self.harness)
+            effect = self.effects[effect_name](self.harness)
             self.effects_stack.append(effect)
             self.update_ui()
         else:
@@ -53,6 +55,7 @@ class Controller:
                     self.update_ui()
 
             self.harness.set_colours(colours)
+            time.sleep(1/60)
 
 
 if __name__ == "__main__":
