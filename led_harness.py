@@ -1,18 +1,15 @@
 import os
 import json
-import sys
 import logging
+import scrollphathd
 import numpy as np
 from PIL import Image
-
-local_path = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(local_path + "/fadecandy/examples/python/")
-
-import opc
-import scrollphathd
+from fadecandy.examples.python import opc
 
 
 def get_led_info():
+
+    local_path = os.path.dirname(os.path.abspath(__file__))
 
     l_dat = json.load(open(local_path + "/mapping/led_info.json"))
     strip_hwid = json.load(open(local_path + "/mapping/led_hardware_index.json"))
@@ -40,7 +37,6 @@ def get_led_info():
         l_dat[led_id]["position_actual"][0] *= -1
         l_dat[led_id]["position_actual"][1] *= -1
 
-
     return l_dat
 
 
@@ -54,7 +50,7 @@ class LedHarness:
 
         self.WIDTH = 27.388
         self.HEIGHT = 25.5237
-        self.DEPTH = 30.5849
+        self.DEPTH = 30.5849  # TODO add min and max values too.
 
     def image_to_colours(self, image_filepath):
 
@@ -69,7 +65,7 @@ class LedHarness:
                     u, v = led["maps"][map_name]
                     x, y = int(u*img.width), int((1-v)*img.height)
                     r, g, b, a = pixels[x, y]
-                    if a:  # Support blending in the future.
+                    if a:  # TODO Support blending in the future.
                         colours[led_id] = [r, g, b]
                 else:
                     logging.warning("can't find mapping for %s" % led_id)
