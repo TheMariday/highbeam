@@ -3,7 +3,7 @@ import json
 import logging
 import scrollphathd
 import numpy as np
-from PIL import Image
+#from PIL import Image
 from fadecandy.examples.python import opc
 
 
@@ -31,7 +31,7 @@ def get_led_info():
         if "position" not in l_dat[led_id]:
             l_dat[led_id]["position"] = l_dat[led_id]["position_actual"]
 
-        l_dat[led_id]["colour"] = [0, 0, 0, 0]
+        l_dat[led_id]["colour"] = [0, 0, 0]
         l_dat[led_id]["position"][0] *= -1
         l_dat[led_id]["position"][1] *= -1
         l_dat[led_id]["position_actual"][0] *= -1
@@ -85,15 +85,21 @@ class LedHarness:
     def render(self, instant=True):
 
         led_strip_buf = np.zeros((512, 3))
-        led_mat_buf = np.zeros((9, 16))
+        led_mat_buf = np.zeros((16, 16))
 
         for led_id in self.leds:
             led = self.leds[led_id]
             if led["type"] == "strip":
                 led_strip_buf[led["hardware_id"]] = led["colour"]
             elif led["type"] == "mat":
-                x, y = led["hardware_id"]
-                led_mat_buf[x, y] = np.max(led["colour"])
+                y, x = led["hardware_id"]
+                y = 8 - y
+                #led_mat_buf[x, y] = int(np.max(led["colour"])/255.0)
+                #print("here")
+                v = max(led["colour"])/255.0
+                if v:
+                    print(v, x, y)
+                scrollphathd.pixel(x, y, v)
 
         if np.min(led_strip_buf) < 0 or \
                 np.min(led_mat_buf) < 0 or \
@@ -106,7 +112,7 @@ class LedHarness:
         if instant:
             self.client.put_pixels(led_strip_buf)
 
-        scrollphathd.buf = led_mat_buf
+#        scrollphathd.buf = led_mat_buf
         scrollphathd.show()
 
     def quit(self):

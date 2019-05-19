@@ -104,10 +104,10 @@ class IS31FL3731:
 
 
         """
-        if not 0 < brightness < 255:
+        if not 0 <= brightness <= 255:
             raise ValueError('Value {} out of range. Brightness must be between 0 and 255'.format(brightness))
 
-        if not 0 < index < 143:
+        if not 0 <= index <= 143:
             raise ValueError('Index must be between 0 and 143')
 
         self._buf[frame][index] = brightness
