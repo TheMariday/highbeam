@@ -45,6 +45,7 @@ class Controller:
         if effect_name in self.effects:
             effect = self.effects[effect_name]
             e = effect(self.harness)
+            e.start_time = time.time()
             self.effects_stack.append(e)
             self.update_ui()
         else:
@@ -52,27 +53,20 @@ class Controller:
 
     def run(self):
         while self.node.running:
-            colours = {}
             for i, effect in enumerate(self.effects_stack):
                 if effect.running:
-                    effect.colours = {}
-                    effect.update(time.time()-effect.start_time)
-                    colours.update(effect.colours)
+                    self.harness = effect.update(time.time()-effect.start_time, self.harness)
                 else:
                     del self.effects_stack[i]
                     self.update_ui()
 
-                self.harness.set_colours(colours, render=False)  # set to False for debug
             self.harness.render()
-
-            #print("here")
-            #time.sleep(1/60)
 
 
 if __name__ == "__main__":
 
-    from effects import Level, Wave
+    from effects import Swirl
 
-    c = Controller(Level, Wave)
+    c = Controller(Swirl)
 
     c.run()

@@ -74,7 +74,7 @@ class LedHarness:
 
         return colours
 
-    def set_colours(self, d, render=True):
+    def set_colours(self, d, render=True):  # TODO remove, Now unused
         for led_id in self.leds:
             if led_id in d:
                 self.leds[led_id]["colour"] = d[led_id]
