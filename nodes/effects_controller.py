@@ -61,12 +61,12 @@ class Controller:
                 else:
                     del self.effects_stack[i]
                     self.update_ui()
-            try:
-                self.harness.set_colours(colours)  # set to False for debug
-            except:
-                pass
+
+                self.harness.set_colours(colours, render=False)  # set to False for debug
+            self.harness.render()
+
             #print("here")
-            time.sleep(1/60)
+            #time.sleep(1/60)
 
 
 if __name__ == "__main__":

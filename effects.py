@@ -31,11 +31,13 @@ class Level(base_effect):
 class Wave(base_effect):
 
     def update(self, time):
+        #print(time)
         for led_id in self.harness.leds:
             led = self.harness.leds[led_id]
 
-            band_center = (time*30)/10
-            if band_center > 20:
-                self.finished()
-            if band_center - 2.5 < led["position"][1] < band_center + 2.5:
-                self.set_colour(led_id, [0, 0, 255])
+            #band_center = (time*30)/10
+            #if band_center > 20:
+            #    self.finished()
+            #if band_center - 2.5 < led["position"][1] < band_center + 2.5:
+            if (led["position"][1]+13)/2.0 < time:
+                 self.set_colour(led_id, [0, 0, 128])

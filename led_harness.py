@@ -4,8 +4,9 @@ import logging
 import scrollphathd
 import numpy as np
 #from PIL import Image
+import time
 from fadecandy.examples.python import opc
-
+import atexit
 
 def get_led_info():
 
@@ -21,17 +22,17 @@ def get_led_info():
             l_dat[led_id]["type"] = "mat"
             x, y = np.where(np.array(mat_hwid) == led_id.replace("eye_empty.", ""))
             l_dat[led_id]["hardware_id"] = (x[0], y[0])
-            l_dat[led_id]["position"] = l_dat[led_id]["position_actual"]
-        elif led_id.startswith("LED"):
+            l_dat[led_id]["position"] = list(l_dat[led_id]["position_actual"])
+        if led_id.startswith("LED"):
             l_dat[led_id]["type"] = "strip"
             l_dat[led_id]["hardware_id"] = strip_hwid.index(led_id.replace("LED.", ""))
-        else:
-            pass
+
 
         if "position" not in l_dat[led_id]:
             l_dat[led_id]["position"] = l_dat[led_id]["position_actual"]
 
         l_dat[led_id]["colour"] = [0, 0, 0]
+        #if l_dat[led_id]["type"] == "strip":
         l_dat[led_id]["position"][0] *= -1
         l_dat[led_id]["position"][1] *= -1
         l_dat[led_id]["position_actual"][0] *= -1
@@ -51,6 +52,7 @@ class LedHarness:
         self.WIDTH = 27.388
         self.HEIGHT = 25.5237
         self.DEPTH = 30.5849  # TODO add min and max values too.
+        atexit.register(self.quit)
 
     def image_to_colours(self, image_filepath):
 
@@ -85,8 +87,8 @@ class LedHarness:
     def render(self, instant=True):
 
         led_strip_buf = np.zeros((512, 3))
-        led_mat_buf = np.zeros((16, 16))
-
+#        led_mat_buf = np.zeros((16, 16))
+#        s1 = time.time()
         for led_id in self.leds:
             led = self.leds[led_id]
             if led["type"] == "strip":
@@ -97,23 +99,24 @@ class LedHarness:
                 #led_mat_buf[x, y] = int(np.max(led["colour"])/255.0)
                 #print("here")
                 v = max(led["colour"])/255.0
-                if v:
-                    print(v, x, y)
                 scrollphathd.pixel(x, y, v)
-
-        if np.min(led_strip_buf) < 0 or \
-                np.min(led_mat_buf) < 0 or \
-                np.min(led_strip_buf) > 255 or \
-                np.min(led_mat_buf) > 255:
-            logging.error("Warning, some pixels values are outside of expected parameters")
-            return
-
+#        s2 = time.time()
+#        if np.min(led_strip_buf) < 0 or \
+#                np.min(led_mat_buf) < 0 or \
+#                np.min(led_strip_buf) > 255 or \
+#                np.min(led_mat_buf) > 255:
+#            logging.error("Warning, some pixels values are outside of expected parameters")
+#            return
+#       s3 = time.time()
         self.client.put_pixels(led_strip_buf)
-        if instant:
-            self.client.put_pixels(led_strip_buf)
-
+ #       if instant:
+#            self.client.put_pixels(led_strip_buf)
+#        s4 = time.time()
 #        scrollphathd.buf = led_mat_buf
         scrollphathd.show()
+#        s5 = time.time()
+
+#        print((s2-s1)/(s5-s1), (s3-s2)/(s5-s1), (s4-s3)/(s5-s1), (s5-s4)/(s5-s1))
 
     def quit(self):
         for led_id in self.leds:
