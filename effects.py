@@ -3,7 +3,7 @@ import math
 
 class Alignment:
 
-    def __int__(self):
+    def __init__(self):
         self.band = 5
 
     def update(self, t, h):
@@ -53,3 +53,5 @@ class Swirl:
             v2 = self.get_swirl_brightness(x, z, timestep + 10)
             v3 = self.get_swirl_brightness(x, y, timestep + 20)  # TODO not sure if this should be y or z
             h.leds[led_id]["colour"] = [v1*255, v2*255, v3*255]
+
+        return h

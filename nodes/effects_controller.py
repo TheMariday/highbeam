@@ -44,7 +44,7 @@ class Controller:
         effect_name = msg["data"]
         if effect_name in self.effects:
             effect = self.effects[effect_name]
-            e = effect(self.harness)
+            e = effect()
             e.start_time = time.time()
             self.effects_stack.append(e)
             self.update_ui()
@@ -54,8 +54,9 @@ class Controller:
     def run(self):
         while self.node.running:
             for i, effect in enumerate(self.effects_stack):
-                if effect.running:
-                    self.harness = effect.update(time.time()-effect.start_time, self.harness)
+                harness = effect.update(time.time()-effect.start_time, self.harness)
+                if harness is not None:
+                    self.harness = harness
                 else:
                     del self.effects_stack[i]
                     self.update_ui()
@@ -65,8 +66,8 @@ class Controller:
 
 if __name__ == "__main__":
 
-    from effects import Swirl
+    from effects import Swirl, Alignment
 
-    c = Controller(Swirl)
+    c = Controller(Swirl, Alignment)
 
     c.run()

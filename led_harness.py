@@ -47,7 +47,7 @@ class LedHarness:
         self.leds = get_led_info()
         self.client = opc.Client('localhost:7890')
         self.uv_maps = ["side", "front"]  # order = bottom to top of layers
-        self._brightness = .7
+        self._brightness = .5
 
         self.WIDTH = 27.388
         self.HEIGHT = 25.5237
