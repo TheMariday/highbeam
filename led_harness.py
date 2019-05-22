@@ -48,11 +48,26 @@ class LedHarness:
         self.client = opc.Client('localhost:7890')
         self.uv_maps = ["side", "front"]  # order = bottom to top of layers
         self._brightness = .5
+        self._eye_brightness = 1
 
         self.WIDTH = 27.388
         self.HEIGHT = 25.5237
         self.DEPTH = 30.5849  # TODO add min and max values too.
         atexit.register(self.quit)
+
+    def change_brightness(self, v):
+        if 0 <= (v + self._brightness) <= .7:
+            self._brightness += v
+
+    def change_eye_brightness(self, v):
+        if 0 <= (v + self._eye_brightness) <= 1:
+            self._eye_brightness += v
+
+    def get_brightness(self):
+        return self._brightness
+
+    def get_eye_brightness(self):
+        return self._eye_brightness
 
     def image_to_colours(self, image_filepath):
 
@@ -87,8 +102,6 @@ class LedHarness:
     def render(self, instant=True):
 
         led_strip_buf = np.zeros((512, 3))
-#        led_mat_buf = np.zeros((16, 16))
-#        s1 = time.time()
         for led_id in self.leds:
             led = self.leds[led_id]
             if led["type"] == "strip":
@@ -96,27 +109,12 @@ class LedHarness:
             elif led["type"] == "mat":
                 y, x = led["hardware_id"]
                 y = 8 - y
-                #led_mat_buf[x, y] = int(np.max(led["colour"])/255.0)
-                #print("here")
-                v = max(led["colour"])/255.0
+                v = (max(led["colour"])/255.0) * self._eye_brightness
                 scrollphathd.pixel(x, y, v)
-#        s2 = time.time()
-#        if np.min(led_strip_buf) < 0 or \
-#                np.min(led_mat_buf) < 0 or \
-#                np.min(led_strip_buf) > 255 or \
-#                np.min(led_mat_buf) > 255:
-#            logging.error("Warning, some pixels values are outside of expected parameters")
-#            return
-#       s3 = time.time()
-        self.client.put_pixels(led_strip_buf)
- #       if instant:
-#            self.client.put_pixels(led_strip_buf)
-#        s4 = time.time()
-#        scrollphathd.buf = led_mat_buf
-        scrollphathd.show()
-#        s5 = time.time()
 
-#        print((s2-s1)/(s5-s1), (s3-s2)/(s5-s1), (s4-s3)/(s5-s1), (s5-s4)/(s5-s1))
+        self.client.put_pixels(led_strip_buf * self._brightness)
+        scrollphathd.show()
+
 
     def quit(self):
         for led_id in self.leds:
