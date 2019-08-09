@@ -101,7 +101,8 @@ class Controller:
 if __name__ == "__main__":
 
     from effects import Swirl, Alignment, Epilepsy, Sparkle, Random, EyesOff, AllOff, BrokenSwirl
+    from reyna import Reyna
 
-    c = Controller(Swirl, Alignment, Epilepsy, Sparkle, Random, EyesOff, AllOff, BrokenSwirl)
+    c = Controller(Swirl, Alignment, Epilepsy, Sparkle, Random, EyesOff, AllOff, BrokenSwirl, Reyna)
 
     c.run()
